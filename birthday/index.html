@@ -324,6 +324,91 @@
     opacity:.8;
   }
 
+  /* ============ 视频区 ============ */
+  .clips{background:linear-gradient(180deg,var(--sky-1) 0%, var(--white) 26%)}
+  .clip-grid{
+    max-width:980px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:clamp(14px,2.4vw,26px);
+  }
+  @media (max-width:620px){ .clip-grid{grid-template-columns:1fr} }
+  .clip{
+    position:relative;
+    aspect-ratio:16/9;
+    border-radius:14px;
+    overflow:hidden;
+    background:#0d1820;
+    box-shadow:var(--shadow-s);
+    cursor:pointer;
+    transform:translateY(30px);
+    opacity:0;
+    transition:opacity .9s var(--ease), transform .9s var(--ease), box-shadow .4s ease;
+  }
+  .clip.in{opacity:1;transform:translateY(0)}
+  .clip:hover{box-shadow:var(--shadow-m)}
+  .clip>img{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    object-fit:cover;
+    display:block;
+    transition:transform 1.05s var(--ease), opacity .5s ease;
+  }
+  .clip:hover>img{transform:scale(1.04)}
+  .clip video{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    display:block;
+    background:#000;
+    z-index:3;
+  }
+  .clip .play{
+    position:absolute;left:50%;top:50%;
+    transform:translate(-50%,-50%);
+    width:62px;height:62px;
+    border-radius:50%;
+    background:rgba(255,255,255,.9);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 8px 30px rgba(0,0,0,.35);
+    transition:transform .35s var(--ease), opacity .4s ease;
+    z-index:2;
+  }
+  .clip .play::after{
+    content:"";
+    display:block;
+    border-left:19px solid var(--sky-4);
+    border-top:11px solid transparent;
+    border-bottom:11px solid transparent;
+    margin-left:5px;
+  }
+  .clip:hover .play{transform:translate(-50%,-50%) scale(1.09)}
+  .clip .cap{
+    position:absolute;
+    left:0;right:0;bottom:0;
+    padding:14px 16px 13px;
+    color:#fff;
+    font-size:12.5px;
+    line-height:1.65;
+    letter-spacing:.03em;
+    background:linear-gradient(to top, rgba(20,38,50,.55), transparent);
+    z-index:2;
+    pointer-events:none;
+    text-shadow:0 1px 6px rgba(0,0,0,.35);
+  }
+  .clip .hint{
+    position:absolute;
+    top:12px;right:12px;
+    font-size:10.5px;
+    letter-spacing:.18em;
+    color:rgba(255,255,255,.85);
+    background:rgba(13,24,32,.45);
+    padding:4px 10px;
+    border-radius:99px;
+    z-index:2;
+    pointer-events:none;
+  }
+
   /* ============ 灯箱 ============ */
   .lb{
     position:fixed;inset:0;
@@ -495,6 +580,15 @@
   <div class="masonry" id="masonry"></div>
 </section>
 
+<!-- ==================== 视频 ==================== -->
+<section class="section clips" id="clips">
+  <div class="wall-head">
+    <h2 class="reveal">会动的回忆</h2>
+    <p class="reveal">点一下就能播放</p>
+  </div>
+  <div class="clip-grid" id="clipGrid"></div>
+</section>
+
 <!-- ==================== 结尾 ==================== -->
 <section class="ending">
   <div class="mark reveal">✦</div>
@@ -645,6 +739,84 @@ PHOTOS.forEach((p, i) => {
   masonry.appendChild(fig);
 });
 
+/* ---------- 视频列表 ---------- */
+const CLIPS = [
+  { v: 'v-bridge-selfie.mp4',  p: 'v-bridge-selfie-poster.jpg',  c: '桥边的那段，风还在吹' },
+  { v: 'v-golden-card.mp4',    p: 'v-golden-card-poster.jpg',    c: '抽到金卡的那一刻' },
+  { v: 'v-mv-mono.mp4',        p: 'v-mv-mono-poster.jpg',        c: '剪出来的那支小片子' },
+  { v: 'v-pocket-watch.mp4',   p: 'v-pocket-watch-poster.jpg',   c: '雪山和怀表，时间停在最好看的地方' },
+];
+const VIDEO_DIR = 'assets/video/';
+
+/* 点击才加载视频：平时只占一张封面图的流量 */
+function mountPlayer(clip) {
+  if (clip.querySelector('video')) return;
+  const src = clip.dataset.video;
+  const video = document.createElement('video');
+  video.src = VIDEO_DIR + src;
+  video.preload = 'auto';
+  video.playsInline = true;
+  video.controls = true;
+  video.poster = VIDEO_DIR + clip.dataset.poster;
+  video.addEventListener('ended', () => {
+    video.remove();
+    clip.querySelector('.play').style.display = '';
+    clip.querySelector('.hint').style.display = '';
+  });
+  video.addEventListener('pause', () => {
+    /* 暂停时保留控件，方便继续；点关闭区域外再收起 */
+  });
+  clip.appendChild(video);
+  clip.querySelector('.play').style.display = 'none';
+  clip.querySelector('.hint').style.display = 'none';
+  video.play().catch(() => { /* 自动播放被拦也没关系，有 controls */ });
+}
+
+const clipGrid = document.getElementById('clipGrid');
+CLIPS.forEach((c, i) => {
+  const box = document.createElement('div');
+  box.className = 'clip';
+  box.dataset.video = c.v;
+  box.dataset.poster = c.p;
+  box.setAttribute('role', 'button');
+  box.setAttribute('tabindex', '0');
+  box.setAttribute('aria-label', '播放视频：' + c.c);
+
+  const poster = document.createElement('img');
+  poster.src = VIDEO_DIR + c.p;
+  poster.alt = c.c;
+  poster.loading = 'lazy';
+  poster.decoding = 'async';
+
+  const play = document.createElement('div');
+  play.className = 'play';
+
+  const hint = document.createElement('div');
+  hint.className = 'hint';
+  hint.textContent = 'HD';
+
+  const cap = document.createElement('div');
+  cap.className = 'cap';
+  cap.textContent = c.c;
+
+  box.appendChild(poster);
+  box.appendChild(play);
+  box.appendChild(hint);
+  box.appendChild(cap);
+  clipGrid.appendChild(box);
+});
+
+clipGrid.addEventListener('click', (e) => {
+  if (e.target.tagName === 'VIDEO') return;   /* 视频自带 controls */
+  const clip = e.target.closest('.clip');
+  if (clip) mountPlayer(clip);
+});
+clipGrid.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const clip = e.target.closest('.clip');
+  if (clip) { e.preventDefault(); mountPlayer(clip); }
+});
+
 /* ---------- 滚动揭示 ---------- */
 const io = new IntersectionObserver((entries) => {
   entries.forEach(e => {
@@ -658,6 +830,10 @@ const io = new IntersectionObserver((entries) => {
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 document.querySelectorAll('.ph').forEach((el, i) => {
   el.style.transitionDelay = `${(i % 3) * 90}ms`;
+  io.observe(el);
+});
+document.querySelectorAll('.clip').forEach((el, i) => {
+  el.style.transitionDelay = `${(i % 2) * 90}ms`;
   io.observe(el);
 });
 
