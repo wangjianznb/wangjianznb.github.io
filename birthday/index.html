@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#eaf4fb">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>侯丽生日快乐</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>">
+<style>
+  /* ============ 设计变量 ============ */
+  :root{
+    --sky-1:#eaf4fb;   /* 最浅天光 */
+    --sky-2:#cfe6f6;
+    --sky-3:#9fcde8;
+    --sky-4:#6fb3d9;   /* 主蓝 */
+    --ink:#20303d;     /* 正文墨色 */
+    --ink-soft:#4d6472;
+    --ink-mute:#8ba3b2;
+    --white:#ffffff;
+    --warm:#f6c88a;    /* 一点暖金，只用极少处 */
+    --shadow-s:0 2px 10px rgba(32,48,61,.06);
+    --shadow-m:0 10px 34px rgba(32,48,61,.10);
+    --shadow-l:0 24px 70px rgba(32,48,61,.16);
+    --ease:cubic-bezier(.22,.61,.36,1);
+    --font-serif:"Songti SC","Noto Serif SC","Source Han Serif SC","SimSun",Georgia,serif;
+    --font-sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  }
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+  }
+
+  body{
+    margin:0;
+    background:var(--sky-1);
+    color:var(--ink);
+    font-family:var(--font-sans);
+    line-height:1.85;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  /* ============ 首屏 ============ */
+  .hero{
+    position:relative;
+    min-height:100svh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:8vh 24px 12vh;
+    overflow:hidden;
+    background:
+      radial-gradient(120% 80% at 50% 0%, #f7fbfe 0%, var(--sky-1) 42%, var(--sky-2) 100%);
+  }
+  /* 漂浮的光点：模仿轻音乐里缓慢起伏的音符 */
+  .hero-notes{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .hero-notes i{
+    position:absolute;
+    display:block;
+    border-radius:50%;
+    background:radial-gradient(circle at 32% 30%, #ffffff, rgba(159,205,232,.55));
+    opacity:0;
+    animation:float-up linear infinite;
+  }
+  @keyframes float-up{
+    0%{transform:translate3d(0,12vh,0) scale(.6);opacity:0}
+    12%{opacity:.75}
+    88%{opacity:.55}
+    100%{transform:translate3d(var(--drift,0),-108vh,0) scale(1.15);opacity:0}
+  }
+
+  .hero-inner{position:relative;z-index:2;max-width:720px}
+
+  .hero-eyebrow{
+    font-size:13px;
+    letter-spacing:.42em;
+    text-indent:.42em;
+    color:var(--sky-4);
+    margin:0 0 30px;
+    font-weight:500;
+    opacity:0;
+    animation:fade-rise 1.1s var(--ease) .15s forwards;
+  }
+
+  .hero-title{
+    font-family:var(--font-serif);
+    font-size:clamp(46px,11vw,96px);
+    line-height:1.12;
+    letter-spacing:.06em;
+    text-indent:.06em;
+    margin:0;
+    font-weight:600;
+    color:var(--ink);
+    text-shadow:0 2px 34px rgba(255,255,255,.9);
+    white-space:nowrap;      /* 绝不在一行中间断字；字号由 JS 自适应 */
+  }
+  .hero-title span{
+    display:inline-block;
+    opacity:0;
+    transform:translateY(26px);
+    animation:fade-rise .95s var(--ease) forwards;
+  }
+  .hero-title .ch-comma{
+    /* 逗号收窄一点，避免名字后面留出过大空隙 */
+    margin-right:-.12em;
+  }
+
+  .hero-sub{
+    margin:34px auto 0;
+    max-width:26em;
+    font-size:clamp(14px,3.5vw,16.5px);
+    line-height:2.1;
+    color:var(--ink-soft);
+    opacity:0;
+    animation:fade-rise 1.2s var(--ease) .75s forwards;
+  }
+
+  .hero-date{
+    margin-top:26px;
+    font-size:12.5px;
+    letter-spacing:.34em;
+    text-indent:.34em;
+    color:var(--ink-mute);
+    opacity:0;
+    animation:fade-rise 1.2s var(--ease) 1s forwards;
+  }
+
+  @keyframes fade-rise{
+    from{opacity:0;transform:translateY(22px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  /* 向下提示 */
+  .scroll-hint{
+    position:absolute;
+    bottom:max(26px,env(safe-area-inset-bottom));
+    left:50%;
+    transform:translateX(-50%);
+    z-index:2;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:9px;
+    color:var(--ink-mute);
+    font-size:11px;
+    letter-spacing:.3em;
+    text-indent:.3em;
+    opacity:0;
+    animation:fade-rise 1s var(--ease) 1.5s forwards;
+    pointer-events:none;
+  }
+  .scroll-hint::after{
+    content:"";
+    width:1px;height:38px;
+    background:linear-gradient(to bottom,var(--sky-3),transparent);
+    animation:hint-slide 2.4s ease-in-out infinite;
+  }
+  @keyframes hint-slide{
+    0%,100%{opacity:.35;transform:translateY(0)}
+    50%{opacity:1;transform:translateY(6px)}
+  }
+
+  /* ============ 正文段落通用 ============ */
+  .section{position:relative;padding:clamp(70px,11vh,120px) 24px}
+  .narrow{max-width:640px;margin:0 auto}
+
+  /* ============ 信（文案） ============ */
+  .letter{background:var(--white)}
+  .letter .narrow{max-width:620px}
+  .letter h2{
+    font-family:var(--font-serif);
+    font-size:clamp(21px,5vw,27px);
+    font-weight:600;
+    letter-spacing:.05em;
+    margin:0 0 40px;
+    color:var(--ink);
+    line-height:1.5;
+  }
+  .letter p{
+    margin:0 0 1.55em;
+    font-size:clamp(15px,3.8vw,16.5px);
+    line-height:2.15;
+    color:var(--ink-soft);
+    letter-spacing:.012em;
+  }
+  .letter p:last-child{margin-bottom:0}
+  .letter .sign{
+    margin-top:46px;
+    text-align:right;
+    font-family:var(--font-serif);
+    font-size:14.5px;
+    color:var(--ink-mute);
+    letter-spacing:.06em;
+  }
+  /* 首字稍作强调 */
+  .letter .lead::first-letter{
+    font-family:var(--font-serif);
+    font-size:2.5em;
+    float:left;
+    line-height:.92;
+    padding:.06em .12em 0 0;
+    color:var(--sky-4);
+    font-weight:600;
+  }
+
+  /* ============ 照片墙 ============ */
+  .wall{background:linear-gradient(180deg,var(--white) 0%, #f4fafd 22%, var(--sky-1) 100%)}
+  .wall-head{text-align:center;margin-bottom:clamp(38px,7vw,62px)}
+  .wall-head h2{
+    font-family:var(--font-serif);
+    font-size:clamp(21px,5vw,27px);
+    font-weight:600;
+    letter-spacing:.05em;
+    margin:0 0 16px;
+  }
+  .wall-head p{
+    margin:0;
+    font-size:13.5px;
+    color:var(--ink-mute);
+    letter-spacing:.14em;
+  }
+
+  /* 瀑布流：CSS columns，天然适配横竖混排 */
+  .masonry{
+    max-width:1220px;
+    margin:0 auto;
+    column-gap:clamp(14px,2.4vw,26px);
+    columns:1;
+  }
+  @media (min-width:620px){ .masonry{columns:2} }
+  @media (min-width:1000px){ .masonry{columns:3} }
+
+  .ph{
+    break-inside:avoid;
+    margin:0 0 clamp(14px,2.4vw,26px);
+    position:relative;
+    border-radius:14px;
+    overflow:hidden;
+    cursor:zoom-in;
+    background:var(--sky-2);
+    box-shadow:var(--shadow-s);
+    transform:translateY(30px);
+    opacity:0;
+    transition:opacity .9s var(--ease), transform .9s var(--ease), box-shadow .4s ease;
+  }
+  .ph.in{opacity:1;transform:translateY(0)}
+  .ph img{
+    display:block;
+    width:100%;
+    height:auto;
+    transition:transform 1.05s var(--ease), filter .5s ease;
+    will-change:transform;
+  }
+  .ph:hover img{transform:scale(1.045)}
+  .ph::after{
+    content:"";
+    position:absolute;inset:0;
+    background:linear-gradient(to top, rgba(20,38,50,.55) 0%, rgba(20,38,50,.12) 26%, transparent 52%);
+    opacity:0;
+    transition:opacity .45s ease;
+    pointer-events:none;
+  }
+  .ph:hover::after{opacity:1}
+  .ph .cap{
+    position:absolute;
+    left:0;right:0;bottom:0;
+    padding:16px 18px 15px;
+    color:#fff;
+    font-size:12.5px;
+    line-height:1.65;
+    letter-spacing:.03em;
+    opacity:0;
+    transform:translateY(8px);
+    transition:opacity .45s ease, transform .45s var(--ease);
+    pointer-events:none;
+    text-shadow:0 1px 6px rgba(0,0,0,.3);
+  }
+  .ph:hover .cap{opacity:1;transform:translateY(0)}
+  /* 触屏没有 hover：常显一层很淡的说明 */
+  @media (hover:none){
+    .ph::after{opacity:.55;background:linear-gradient(to top, rgba(20,38,50,.42), transparent 46%)}
+    .ph .cap{opacity:1;transform:none;font-size:12px}
+  }
+
+  /* ============ 结尾 ============ */
+  .ending{
+    background:linear-gradient(180deg,var(--sky-1) 0%, var(--sky-2) 55%, #dcecf7 100%);
+    text-align:center;
+    padding:clamp(88px,14vh,150px) 24px clamp(80px,12vh,130px);
+  }
+  .ending .mark{
+    font-size:26px;
+    letter-spacing:.5em;
+    text-indent:.5em;
+    margin-bottom:30px;
+    opacity:.85;
+  }
+  .ending h2{
+    font-family:var(--font-serif);
+    font-size:clamp(22px,5.4vw,30px);
+    font-weight:600;
+    letter-spacing:.07em;
+    margin:0 0 26px;
+  }
+  .ending p{
+    max-width:24em;
+    margin:0 auto;
+    font-size:clamp(14.5px,3.6vw,16px);
+    line-height:2.15;
+    color:var(--ink-soft);
+  }
+  .ending .tiny{
+    margin-top:clamp(52px,9vh,86px);
+    font-size:11.5px;
+    letter-spacing:.26em;
+    text-indent:.26em;
+    color:var(--ink-mute);
+    opacity:.8;
+  }
+
+  /* ============ 视频区 ============ */
+  .clips{background:linear-gradient(180deg,var(--sky-1) 0%, var(--white) 26%)}
+  .clip-grid{
+    max-width:980px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:clamp(14px,2.4vw,26px);
+  }
+  @media (max-width:620px){ .clip-grid{grid-template-columns:1fr} }
+  .clip{
+    position:relative;
+    aspect-ratio:16/9;
+    border-radius:14px;
+    overflow:hidden;
+    background:#0d1820;
+    box-shadow:var(--shadow-s);
+    cursor:pointer;
+    transform:translateY(30px);
+    opacity:0;
+    transition:opacity .9s var(--ease), transform .9s var(--ease), box-shadow .4s ease;
+  }
+  .clip.in{opacity:1;transform:translateY(0)}
+  .clip:hover{box-shadow:var(--shadow-m)}
+  .clip>img{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    object-fit:cover;
+    display:block;
+    transition:transform 1.05s var(--ease), opacity .5s ease;
+  }
+  .clip:hover>img{transform:scale(1.04)}
+  .clip video{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    display:block;
+    background:#000;
+    z-index:3;
+  }
+  .clip .play{
+    position:absolute;left:50%;top:50%;
+    transform:translate(-50%,-50%);
+    width:62px;height:62px;
+    border-radius:50%;
+    background:rgba(255,255,255,.9);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 8px 30px rgba(0,0,0,.35);
+    transition:transform .35s var(--ease), opacity .4s ease;
+    z-index:2;
+  }
+  .clip .play::after{
+    content:"";
+    display:block;
+    border-left:19px solid var(--sky-4);
+    border-top:11px solid transparent;
+    border-bottom:11px solid transparent;
+    margin-left:5px;
+  }
+  .clip:hover .play{transform:translate(-50%,-50%) scale(1.09)}
+  .clip .cap{
+    position:absolute;
+    left:0;right:0;bottom:0;
+    padding:14px 16px 13px;
+    color:#fff;
+    font-size:12.5px;
+    line-height:1.65;
+    letter-spacing:.03em;
+    background:linear-gradient(to top, rgba(20,38,50,.55), transparent);
+    z-index:2;
+    pointer-events:none;
+    text-shadow:0 1px 6px rgba(0,0,0,.35);
+  }
+  .clip .hint{
+    position:absolute;
+    top:12px;right:12px;
+    font-size:10.5px;
+    letter-spacing:.18em;
+    color:rgba(255,255,255,.85);
+    background:rgba(13,24,32,.45);
+    padding:4px 10px;
+    border-radius:99px;
+    z-index:2;
+    pointer-events:none;
+  }
+
+  /* ============ 灯箱 ============ */
+  .lb{
+    position:fixed;inset:0;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:clamp(16px,4vw,52px);
+    background:rgba(18,32,42,.94);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .42s var(--ease), visibility .42s;
+  }
+  .lb.open{opacity:1;visibility:visible}
+  .lb-fig{
+    margin:0;
+    max-width:100%;
+    max-height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:16px;
+    transform:scale(.965);
+    transition:transform .5s var(--ease);
+  }
+  .lb.open .lb-fig{transform:scale(1)}
+  .lb-fig img{
+    display:block;
+    max-width:100%;
+    max-height:calc(100svh - 150px);
+    width:auto;height:auto;
+    border-radius:10px;
+    box-shadow:0 30px 90px rgba(0,0,0,.5);
+  }
+  .lb-cap{
+    color:rgba(255,255,255,.82);
+    font-size:13.5px;
+    line-height:1.7;
+    text-align:center;
+    max-width:36em;
+    letter-spacing:.03em;
+  }
+  .lb-count{
+    color:rgba(255,255,255,.42);
+    font-size:11.5px;
+    letter-spacing:.22em;
+  }
+  .lb-btn{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:52px;height:52px;
+    border:0;
+    border-radius:50%;
+    background:rgba(255,255,255,.10);
+    color:#fff;
+    font-size:20px;
+    line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:background .28s ease, transform .28s var(--ease);
+    backdrop-filter:blur(6px);
+  }
+  .lb-btn:hover{background:rgba(255,255,255,.22)}
+  .lb-btn:active{transform:translateY(-50%) scale(.94)}
+  .lb-prev{left:clamp(8px,2.6vw,26px)}
+  .lb-next{right:clamp(8px,2.6vw,26px)}
+  .lb-close{
+    position:absolute;
+    top:max(16px,env(safe-area-inset-top));
+    right:clamp(14px,3vw,28px);
+    width:44px;height:44px;
+    border:0;border-radius:50%;
+    background:rgba(255,255,255,.10);
+    color:#fff;font-size:22px;line-height:1;
+    cursor:pointer;
+    transition:background .28s ease;
+  }
+  .lb-close:hover{background:rgba(255,255,255,.22)}
+
+  /* ============ 顶部进度条（阅读感） ============ */
+  .progress{
+    position:fixed;top:0;left:0;
+    height:2px;width:0;
+    background:linear-gradient(90deg,var(--sky-3),var(--sky-4));
+    z-index:99;
+    transition:width .12s linear;
+    pointer-events:none;
+  }
+
+  /* ============ 进场：滚动揭示 ============ */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity 1s var(--ease), transform 1s var(--ease)}
+  .reveal.in{opacity:1;transform:translateY(0)}
+
+  /* 打印/极简降级 */
+  @media (max-width:400px){
+    .letter p{line-height:2.05}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<!-- ==================== 首屏 ==================== -->
+<header class="hero">
+  <div class="hero-notes" id="notes" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <p class="hero-eyebrow">HAPPY BIRTHDAY</p>
+    <h1 class="hero-title" id="title"></h1>
+    <p class="hero-sub">
+      认识你不久，刚好赶上你的生日。
+      <br>愿新的一岁，山川湖海都如你所愿。
+    </p>
+    <p class="hero-date" id="dateline"></p>
+  </div>
+  <div class="scroll-hint">往下</div>
+</header>
+
+<!-- ==================== 信 ==================== -->
+<section class="section letter">
+  <div class="narrow">
+    <h2 class="reveal">生日快乐，侯丽</h2>
+
+    <p class="lead reveal">
+      生日快乐。
+    </p>
+
+    <p class="reveal">
+      认识你没多久，刚好赶上你的生日，就想认真说一句 —— 能认识你挺好的。
+    </p>
+
+    <p class="reveal">
+      翻你这些照片的时候发现，你去了不少地方：雪山、经幡、湖边，
+      还有风把白裙子吹起来的样子。能把日子过成这样的人，通常都不太将就。
+    </p>
+
+    <p class="reveal">
+      新的一岁，祝你：
+      想去的地方都能去成，想做的事都能做成，
+      想见的人，路上就能遇见。
+    </p>
+
+    <p class="reveal">
+      也祝你在外面的时候有热饭吃，累的时候有地方歇，
+      不开心的时候有人可以说话 —— 这些听起来普通，但比什么「暴富」「暴瘦」实在得多。
+    </p>
+
+    <p class="reveal">
+      99 年的你，往后的路还长。愿它平坦一点，也精彩一点。
+    </p>
+
+    <p class="reveal">
+      生日快乐，侯丽。
+    </p>
+
+    <p class="sign reveal">—— 一个刚认识你的朋友</p>
+  </div>
+</section>
+
+<!-- ==================== 照片墙 ==================== -->
+<section class="section wall" id="wall">
+  <div class="wall-head">
+    <h2 class="reveal">这一年的光</h2>
+    <p class="reveal">点开可以看大图</p>
+  </div>
+  <div class="masonry" id="masonry"></div>
+</section>
+
+<!-- ==================== 视频 ==================== -->
+<section class="section clips" id="clips">
+  <div class="wall-head">
+    <h2 class="reveal">会动的回忆</h2>
+    <p class="reveal">点一下就能播放</p>
+  </div>
+  <div class="clip-grid" id="clipGrid"></div>
+</section>
+
+<!-- ==================== 结尾 ==================== -->
+<section class="ending">
+  <div class="mark reveal">✦</div>
+  <h2 class="reveal">愿你岁岁平安，年年有今朝</h2>
+  <p class="reveal">
+    蛋糕要记得吃，愿望要记得许。
+    <br>剩下的，交给时间。
+  </p>
+  <p class="tiny reveal">生日快乐，侯丽 · 2026</p>
+</section>
+
+<!-- ==================== 灯箱 ==================== -->
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="查看大图">
+  <button class="lb-close" id="lbClose" aria-label="关闭">✕</button>
+  <button class="lb-btn lb-prev" id="lbPrev" aria-label="上一张">‹</button>
+  <figure class="lb-fig">
+    <img id="lbImg" alt="">
+    <figcaption>
+      <div class="lb-cap" id="lbCap"></div>
+      <div class="lb-count" id="lbCount"></div>
+    </figcaption>
+  </figure>
+  <button class="lb-btn lb-next" id="lbNext" aria-label="下一张">›</button>
+</div>
+
+<script>
+/* =========================================================
+   可改的几处 —— 想让页面更"你的"，改这里就够了
+   ========================================================= */
+const CONFIG = {
+  /* ① 名字：填了就会出现在大标题上，比如填「阿满」→ 标题变成「阿满，生日快乐」 */
+  name: '侯丽',
+  /* ② 生日日期：填了会显示在首屏下方，比如 '2026.11.03'；留空则不显示 */
+  birthday: '',
+  /* ③ 大标题里「生日快乐」四个字要不要逐字浮现（true 好看） */
+  splitTitle: true,
+};
+
+/* ---------- 标题 ---------- */
+(function buildTitle(){
+  const el = document.getElementById('title');
+  const name = (CONFIG.name || '').trim();
+  const full = name ? `${name}，生日快乐` : '生日快乐';
+  if (CONFIG.splitTitle) {
+    [...full].forEach((ch, i) => {
+      const s = document.createElement('span');
+      s.textContent = ch;
+      if (ch === '，') s.className = 'ch-comma';
+      s.style.animationDelay = (0.35 + i * 0.085) + 's';
+      el.appendChild(s);
+    });
+  } else {
+    el.textContent = full;
+  }
+  if ((CONFIG.birthday || '').trim()) {
+    const d = document.getElementById('dateline');
+    d.textContent = CONFIG.birthday.trim();
+  }
+
+  /* 自动字号：把整行缩放到刚好放下，绝不拆字换行。
+     名字越长，字越小；窗口改变时重算。 */
+  const box = el.closest('.hero-inner') || el.parentElement;
+  function fit() {
+    const avail = Math.max(200, box.clientWidth);
+    let lo = 18, hi = 96, best = lo;
+    /* 二分找能放下的最大字号 */
+    for (let k = 0; k < 14; k++) {
+      const mid = (lo + hi) / 2;
+      el.style.fontSize = mid + 'px';
+      if (el.scrollWidth <= avail) { best = mid; lo = mid; } else { hi = mid; }
+    }
+    el.style.fontSize = Math.floor(best) + 'px';
+  }
+  /* 等字体就绪再量，避免衬线字体加载前后宽度不同 */
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(fit);
+  }
+  fit();
+  let rt;
+  window.addEventListener('resize', () => {
+    clearTimeout(rt);
+    rt = setTimeout(fit, 120);
+  }, { passive: true });
+})();
+
+/* ---------- 首屏漂浮光点 ---------- */
+(function notes(){
+  const box = document.getElementById('notes');
+  const N = window.innerWidth < 640 ? 14 : 22;
+  for (let i = 0; i < N; i++) {
+    const s = document.createElement('i');
+    const size = 3 + Math.random() * 9;
+    s.style.width = s.style.height = size + 'px';
+    s.style.left = (Math.random() * 100) + '%';
+    s.style.bottom = '-12vh';
+    s.style.animationDuration = (16 + Math.random() * 20) + 's';
+    s.style.animationDelay = (-Math.random() * 30) + 's';
+    s.style.setProperty('--drift', (Math.random() * 120 - 60) + 'px');
+    box.appendChild(s);
+  }
+})();
+
+/* ---------- 照片列表（顺序即照片墙顺序） ---------- */
+const PHOTOS = [
+  { f: '01-snow-mountain.jpg',      c: '雪山，和铺到谷底的金黄落叶松' },
+  { f: '02-bridge-portrait.jpg',    c: '木桥上' },
+  { f: '03-white-dress-sky.jpg',    c: '白裙，蓝天，风' },
+  { f: '09-step-rocks.jpg',         c: '踩着石头往前走' },
+  { f: '07-bridge-smile.jpg',       c: '阳光很好' },
+  { f: '05-stone-monument.jpg',     c: '折多塘观景台 · 海拔 3200 米' },
+  { f: '10-railing-smile.jpg',      c: '身后是整片雪山' },
+  { f: '08-look-back.jpg',          c: '回头' },
+  { f: '04-sunglasses-hands.jpg',   c: '冰川湖边' },
+  { f: '11-beanie-mountain.jpg',    c: '毛线帽和雪线' },
+  { f: '12-selfie-bridge.jpg',      c: '桥下的溪水' },
+  { f: '13-bridge-warm.jpg',        c: '暖色的光' },
+  { f: '16-cairn-white-dress.jpg',  c: '玛尼堆旁边' },
+  { f: '14-bridge-grin.jpg',        c: '笑得很开心的一张' },
+  { f: '15-lake-fullbody.jpg',      c: '碎石坡上，远方是湖' },
+  { f: '06-monument-v2.jpg',        c: '经幡与牛角' },
+];
+
+/* ---------- 渲染照片墙 ---------- */
+const masonry = document.getElementById('masonry');
+const IMG_DIR = 'assets/img/';
+PHOTOS.forEach((p, i) => {
+  const fig = document.createElement('figure');
+  fig.className = 'ph';
+  fig.dataset.index = i;
+  fig.setAttribute('role', 'button');
+  fig.setAttribute('tabindex', '0');
+  fig.setAttribute('aria-label', `查看第 ${i + 1} 张：${p.c}`);
+
+  const img = document.createElement('img');
+  img.src = IMG_DIR + p.f;
+  img.alt = p.c;
+  img.loading = i < 4 ? 'eager' : 'lazy';
+  img.decoding = 'async';
+  /* 防止图片加载失败时留个空洞 */
+  img.addEventListener('error', () => { fig.style.display = 'none'; });
+
+  const cap = document.createElement('figcaption');
+  cap.className = 'cap';
+  cap.textContent = p.c;
+
+  fig.appendChild(img);
+  fig.appendChild(cap);
+  masonry.appendChild(fig);
+});
+
+/* ---------- 视频列表 ---------- */
+const CLIPS = [
+  { v: 'v-bridge-selfie.mp4',  p: 'v-bridge-selfie-poster.jpg',  c: '桥边的那段，风还在吹' },
+  { v: 'v-golden-card.mp4',    p: 'v-golden-card-poster.jpg',    c: '抽到金卡的那一刻' },
+  { v: 'v-mv-mono.mp4',        p: 'v-mv-mono-poster.jpg',        c: '剪出来的那支小片子' },
+  { v: 'v-pocket-watch.mp4',   p: 'v-pocket-watch-poster.jpg',   c: '雪山和怀表，时间停在最好看的地方' },
+];
+const VIDEO_DIR = 'assets/video/';
+
+/* 点击才加载视频：平时只占一张封面图的流量 */
+function mountPlayer(clip) {
+  if (clip.querySelector('video')) return;
+  const src = clip.dataset.video;
+  const video = document.createElement('video');
+  video.src = VIDEO_DIR + src;
+  video.preload = 'auto';
+  video.playsInline = true;
+  video.controls = true;
+  video.poster = VIDEO_DIR + clip.dataset.poster;
+  video.addEventListener('ended', () => {
+    video.remove();
+    clip.querySelector('.play').style.display = '';
+    clip.querySelector('.hint').style.display = '';
+  });
+  video.addEventListener('pause', () => {
+    /* 暂停时保留控件，方便继续；点关闭区域外再收起 */
+  });
+  clip.appendChild(video);
+  clip.querySelector('.play').style.display = 'none';
+  clip.querySelector('.hint').style.display = 'none';
+  video.play().catch(() => { /* 自动播放被拦也没关系，有 controls */ });
+}
+
+const clipGrid = document.getElementById('clipGrid');
+CLIPS.forEach((c, i) => {
+  const box = document.createElement('div');
+  box.className = 'clip';
+  box.dataset.video = c.v;
+  box.dataset.poster = c.p;
+  box.setAttribute('role', 'button');
+  box.setAttribute('tabindex', '0');
+  box.setAttribute('aria-label', '播放视频：' + c.c);
+
+  const poster = document.createElement('img');
+  poster.src = VIDEO_DIR + c.p;
+  poster.alt = c.c;
+  poster.loading = 'lazy';
+  poster.decoding = 'async';
+
+  const play = document.createElement('div');
+  play.className = 'play';
+
+  const hint = document.createElement('div');
+  hint.className = 'hint';
+  hint.textContent = 'HD';
+
+  const cap = document.createElement('div');
+  cap.className = 'cap';
+  cap.textContent = c.c;
+
+  box.appendChild(poster);
+  box.appendChild(play);
+  box.appendChild(hint);
+  box.appendChild(cap);
+  clipGrid.appendChild(box);
+});
+
+clipGrid.addEventListener('click', (e) => {
+  if (e.target.tagName === 'VIDEO') return;   /* 视频自带 controls */
+  const clip = e.target.closest('.clip');
+  if (clip) mountPlayer(clip);
+});
+clipGrid.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const clip = e.target.closest('.clip');
+  if (clip) { e.preventDefault(); mountPlayer(clip); }
+});
+
+/* ---------- 滚动揭示 ---------- */
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+document.querySelectorAll('.ph').forEach((el, i) => {
+  el.style.transitionDelay = `${(i % 3) * 90}ms`;
+  io.observe(el);
+});
+document.querySelectorAll('.clip').forEach((el, i) => {
+  el.style.transitionDelay = `${(i % 2) * 90}ms`;
+  io.observe(el);
+});
+
+/* ---------- 灯箱 ---------- */
+const lb = document.getElementById('lb');
+const lbImg = document.getElementById('lbImg');
+const lbCap = document.getElementById('lbCap');
+const lbCount = document.getElementById('lbCount');
+let cur = 0;
+
+function visiblePhotos() {
+  /* 只翻没被隐藏的（图片加载失败的会隐藏） */
+  return PHOTOS.map((p, i) => ({ ...p, i }))
+    .filter(p => {
+      const el = masonry.querySelector(`.ph[data-index="${p.i}"]`);
+      return el && el.style.display !== 'none';
+    });
+}
+
+function show(idx) {
+  const list = visiblePhotos();
+  if (!list.length) return;
+  cur = (idx + list.length) % list.length;
+  const p = list[cur];
+  lbImg.src = IMG_DIR + p.f;
+  lbImg.alt = p.c;
+  lbCap.textContent = p.c;
+  lbCount.textContent = `${cur + 1} / ${list.length}`;
+}
+
+function openLB(idx) {
+  const list = visiblePhotos();
+  const pos = list.findIndex(p => p.i === idx);
+  show(pos === -1 ? 0 : pos);
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLB() {
+  lb.classList.remove('open');
+  document.body.style.overflow = '';
+  /* 关掉后释放大图，省内存 */
+  setTimeout(() => { if (!lb.classList.contains('open')) lbImg.removeAttribute('src'); }, 450);
+}
+
+masonry.addEventListener('click', (e) => {
+  const fig = e.target.closest('.ph');
+  if (fig) openLB(Number(fig.dataset.index));
+});
+masonry.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const fig = e.target.closest('.ph');
+  if (fig) { e.preventDefault(); openLB(Number(fig.dataset.index)); }
+});
+
+document.getElementById('lbPrev').addEventListener('click', () => show(cur - 1));
+document.getElementById('lbNext').addEventListener('click', () => show(cur + 1));
+document.getElementById('lbClose').addEventListener('click', closeLB);
+
+lb.addEventListener('click', (e) => {
+  /* 点空白处关闭 */
+  if (e.target === lb) closeLB();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (!lb.classList.contains('open')) return;
+  if (e.key === 'Escape') closeLB();
+  else if (e.key === 'ArrowLeft') show(cur - 1);
+  else if (e.key === 'ArrowRight') show(cur + 1);
+});
+
+/* 移动端左右滑 */
+let touchX = null;
+lb.addEventListener('touchstart', (e) => { touchX = e.changedTouches[0].clientX; }, { passive: true });
+lb.addEventListener('touchend', (e) => {
+  if (touchX === null) return;
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 46) (dx < 0 ? show(cur + 1) : show(cur - 1));
+  touchX = null;
+}, { passive: true });
+
+/* ---------- 顶部阅读进度 ---------- */
+const progress = document.getElementById('progress');
+function onScroll() {
+  const h = document.documentElement;
+  const total = h.scrollHeight - h.clientHeight;
+  progress.style.width = total > 0 ? ((h.scrollTop / total) * 100) + '%' : '0%';
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+</script>
+</body>
+</html>
